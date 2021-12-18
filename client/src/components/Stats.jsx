@@ -91,6 +91,7 @@ const Controls = styled.div`
   };
   td{
     padding: 2px 11px;
+    font-size: 10px;
   };
 `;
 
