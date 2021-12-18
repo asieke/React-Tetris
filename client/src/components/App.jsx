@@ -5,6 +5,8 @@ import { Board, Piece } from '../lib/data';
 import Game from './Game';
 import Stats from './Stats';
 
+window.FASTFORWARD = false;
+
 class App extends Component {
   constructor(props) {
     super(props);
@@ -37,15 +39,10 @@ class App extends Component {
       });
     }
     if (e.key === 'ArrowDown') {
-      let clone = piece.clone();
-      clone.move('down');
-      this.setState({
-        speed: 10,
-        piece: clone
-      });
+      window.FASTFORWARD = true;
+      this.fastForward();
     }
     if (e.key === 'a' && piece.canRotate('clockwise', board)) {
-
       let clone = piece.clone();
       clone.rotate('clockwise');
       this.setState({
@@ -63,11 +60,61 @@ class App extends Component {
 
   playSound(id) {
     if (this.state.volume) {
-      document.getElementById(id).play();
+      let el = document.getElementById(id);
+      el.play();
+      el.volume = (id === 'themefx' ? '0.1' : '1');
     }
   }
 
-  step() {
+
+
+  finishPiece() {
+    this.playSound('fallfx');
+    let newBoard = this.state.board.clone();
+    newBoard.addPiece(this.state.piece);
+    if (newBoard.hasLines()) {
+      let newLines = newBoard.removeLines() + this.state.lines;
+      let newSpeed = 200 - Math.floor(newLines / 10) * 20;
+      if (Math.floor(newLines / 10) !== Math.floor(this.state.lines / 10)) { // we leveled up!
+        this.playSound('levelup');
+      }
+      this.setState({
+        lines: newLines,
+        speed: newSpeed
+      });
+      this.playSound('linefx');
+    }
+    let r = 1 + Math.floor(Math.random() * 7);
+    let newPiece = new Piece(r);
+    let newSpeed = 200 - Math.floor(this.state.lines / 10) * 20;
+    this.setState({
+      nextPiece: newPiece,
+      piece: this.state.nextPiece.clone(),
+      board: newBoard,
+      speed: newSpeed
+    });
+  }
+
+  advancePiece() {
+    let clone = this.state.piece.clone();
+    clone.move('down');
+    this.setState({
+      piece: clone,
+    });
+  }
+
+  ///steps a piece to the bottom really quickly
+  fastForward() {
+    if (this.state.piece.isDone(this.state.board)) {
+      window.FASTFORWARD = false;
+      this.finishPiece();
+    } else {
+      this.advancePiece();
+      setTimeout(() => this.fastForward(), 10);
+    }
+  }
+
+  step = () => {
     if (this.state.status === 'not-started') {
       console.log('time to start');
     } else {
@@ -75,42 +122,19 @@ class App extends Component {
         this.gameOver();
       } else {
         if (this.state.piece.isDone(this.state.board)) {
-          this.playSound('fallfx');
-          let newBoard = this.state.board.clone();
-          newBoard.addPiece(this.state.piece);
-          if (newBoard.hasLines()) {
-            let newLines = newBoard.removeLines() + this.state.lines;
-            let newSpeed = 200 - Math.floor(newLines / 10) * 20;
-            if (newSpeed !== this.state.speed) { // we leveled up!
-              this.playSound('levelup');
-            }
-            this.setState({
-              lines: newLines,
-              speed: newSpeed
-            });
-            this.playSound('linefx');
-          }
-          let r = 1 + Math.floor(Math.random() * 7);
-          let newPiece = new Piece(r);
-          let newSpeed = 200 - Math.floor(this.state.lines / 10) * 20;
-          this.setState({
-            nextPiece: newPiece,
-            piece: this.state.nextPiece.clone(),
-            board: newBoard,
-            speed: newSpeed
-          });
-          setTimeout(() => this.step(), this.state.speed);
+          this.finishPiece();
+          setTimeout(() => {
+            if (window.FASTFORWARD === false) this.step();
+          }, this.state.speed);
         } else {
-          let clone = this.state.piece.clone();
-          clone.move('down');
-          this.setState({
-            piece: clone,
-          });
-          setTimeout(() => this.step(), this.state.speed);
+          this.advancePiece();
+          setTimeout(() => {
+            if (window.FASTFORWARD === false) this.step();
+          }, this.state.speed);
         }
       }
     }
-  }
+  };
 
   componentDidMount() {
     document.addEventListener('keydown', this.handleKeyPress, false);
@@ -154,12 +178,12 @@ class App extends Component {
               <h4>{this.state.lines}</h4>
             </GameOver>)
           }
-          <StatsContainer>
+          <SideBarContainer>
             <Stats
               lines={this.state.lines}
               next={this.state.nextPiece}
             />
-          </StatsContainer>
+          </SideBarContainer>
           <GameContainer>
             {this.state.status !== 'not-started' && <Game board={this.state.board} piece={this.state.piece} />}
           </GameContainer>
@@ -205,13 +229,15 @@ const HeaderContainer = styled.div`
   color: #eee;
 `;
 
-const StatsContainer = styled.div`
+const SideBarContainer = styled.div`
   display: flex;
   flex-direction: column;
   width: 120px;
   padding: 15px;
   background-color: #333;
   color: #eee;
+  justify-content: 'space-around';
+  align-items: stretch;
 `;
 
 const GameContainer = styled.div`
@@ -225,7 +251,7 @@ const StepButton = styled.button`
   width: 100px;
   float: right;
   margin-left: auto;
-  background-color: lightgreen;
+  background-color: #95a5a6;
   border: 0px;
 
   &:hover {
