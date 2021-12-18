@@ -195,3 +195,19 @@ export class Piece {
   }
 }
 
+
+export const calculateScore = (lines, currentLines) => {
+  let level = Math.floor(lines / 10);
+
+  let score = [];
+
+  for (let i = 0; i < 50; i++) {
+    score[i] = [];
+    score[i][0] = (i + 1) * 40;
+    score[i][1] = (i + 1) * 100;
+    score[i][2] = (i + 1) * 300;
+    score[i][3] = (i + 1) * 1200;
+  }
+
+  return score[level][currentLines - 1]
+}

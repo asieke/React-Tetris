@@ -5,16 +5,16 @@ const bgs = ['rgba(0,0,0,0.0)', '#3498db', '#9b59b6', '#34495e', '#f1c40f', '#e6
 
 const piecePreviews = [
   null,
-  [1, 1, 1, 0, 1, 0, 0, 0, 0, 0, 0, 0],
-  [0, 1, 1, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-  [1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+  [1, 1, 1, 0, 1, 0, 0, 0, 0],
+  [0, 1, 1, 0, 0, 1, 1, 0, 0, 0, 0, 0],
   [1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0],
-  [1, 1, 1, 0, 0, 1, 0, 0, 0, 0, 0, 0],
-  [0, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0],
-  [1, 1, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0]
+  [1, 1, 1, 1, 0, 0, 0, 0, 0],
+  [1, 1, 1, 0, 0, 1, 0, 0, 0],
+  [0, 1, 1, 1, 1, 0, 0, 0, 0],
+  [1, 1, 0, 0, 1, 1, 0, 0, 0]
 ];
 
-let Stats = ({ lines, next, speed }) => {
+let Stats = ({ lines, next, score }) => {
 
   let preview = piecePreviews[next.id];
   // let preview = piecePreviews[4];
@@ -30,6 +30,8 @@ let Stats = ({ lines, next, speed }) => {
 
         ))}
       </PieceContainer>
+      <Text>Score</Text>
+      <Data>{score}</Data>
       <Text>Lines</Text>
       <Data>{lines}</Data>
       <Text>Level</Text>
@@ -62,10 +64,10 @@ const PieceContainer = styled.div`
   flex-direction: row;
   flex-wrap: wrap;
   width: ${(props) => {
-    if (props.size === 12) return '75px';
-    if (props.size === 16) return '100px';
+    if (props.size === 9) return '75px';
+    if (props.size === 12) return '100px';
   }};
-  height: 100px;
+  height: 75px;
   margin: 10px auto;
   padding: 10px;
 `;
@@ -101,7 +103,7 @@ const Text = styled.div`
 `;
 
 const Data = styled.div`
-  margin: 15px auto;
+  margin: 10px auto;
   text-align: center;
   color: #eee;
 `;

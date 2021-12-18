@@ -5,7 +5,7 @@ import { Board, Piece } from '../lib/data';
 import Game from './Game';
 import Stats from './Stats';
 
-window.FASTFORWARD = false;
+window.EPOCH = 0;
 
 class App extends Component {
   constructor(props) {
@@ -17,7 +17,7 @@ class App extends Component {
       speed: 200,
       status: 'not-started',
       lines: 0,
-      volume: true
+      volume: false
     };
   }
 
@@ -39,8 +39,9 @@ class App extends Component {
       });
     }
     if (e.key === 'ArrowDown') {
-      window.FASTFORWARD = true;
-      this.fastForward();
+      this.setState({
+        speed: 10
+      });
     }
     if (e.key === 'a' && piece.canRotate('clockwise', board)) {
       let clone = piece.clone();
@@ -65,8 +66,6 @@ class App extends Component {
       el.volume = (id === 'themefx' ? '0.1' : '1');
     }
   }
-
-
 
   finishPiece() {
     this.playSound('fallfx');
@@ -103,18 +102,9 @@ class App extends Component {
     });
   }
 
-  ///steps a piece to the bottom really quickly
-  fastForward() {
-    if (this.state.piece.isDone(this.state.board)) {
-      window.FASTFORWARD = false;
-      this.finishPiece();
-    } else {
-      this.advancePiece();
-      setTimeout(() => this.fastForward(), 10);
-    }
-  }
-
   step = () => {
+    window.EPOCH += 10;
+    console.log(window.EPOCH);
     if (this.state.status === 'not-started') {
       console.log('time to start');
     } else {
@@ -123,14 +113,11 @@ class App extends Component {
       } else {
         if (this.state.piece.isDone(this.state.board)) {
           this.finishPiece();
-          setTimeout(() => {
-            if (window.FASTFORWARD === false) this.step();
-          }, this.state.speed);
+          setTimeout(() => this.step(), 10);
         } else {
-          this.advancePiece();
-          setTimeout(() => {
-            if (window.FASTFORWARD === false) this.step();
-          }, this.state.speed);
+          if (window.EPOCH % this.state.speed === 0)
+            this.advancePiece();
+          setTimeout(() => this.step(), 10);
         }
       }
     }
@@ -168,6 +155,7 @@ class App extends Component {
       <div>
         <HeaderContainer>
           Tetris
+
           <StepButton onClick={this.startGame}>Start</StepButton>
         </HeaderContainer>
         <Container>
@@ -179,6 +167,7 @@ class App extends Component {
             </GameOver>)
           }
           <SideBarContainer>
+            {window.EPOCH}
             <Stats
               lines={this.state.lines}
               next={this.state.nextPiece}
