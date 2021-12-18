@@ -65,22 +65,25 @@ const Overlay = styled.div`
   color: white;
   text-align: center;
   h1{
+    font-family: 'Games', sans-serif;
     font-size: 30px;
     color: white;
     background-color: #8e44ad;
     width: 240px;
-    padding: 5px;
+    padding: 10px 0px 5px 0px;
     margin: 15px auto;
   };
   h4{
     font-size: 20px;
+    font-family: 'Games', sans-serif;
     color: white;
     background-color: #c0392b;
     width: 240px;
-    padding: 5px;
+    padding: 10px 0px 5px 0px;
     margin: 20px auto;
   };
   h3{
+    font-family: 'Games', sans-serif;
     line-height: 25px;
   }
 `;
@@ -95,6 +98,8 @@ const HighTable = styled.table`
     text-align: center;
     border: 1px solid #333;
     padding: 3px;
+    font-size: 13px;
+    font-weight: normal;
   };
 
   th {
@@ -104,9 +109,9 @@ const HighTable = styled.table`
 
 const PlayAgain = styled.button`
   background-color: #27ae60;
-  padding: 5px 20px;
+  padding: 10px 20px 5px 20px;
   font-size: 20px;
-  font-family: 'Courier New', Courier, monospace;
+  font-family: 'Games', sans-serif;
   margin-top: 20px;
   color: white;
   font-weight: bold;

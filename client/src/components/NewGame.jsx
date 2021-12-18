@@ -4,7 +4,7 @@ import styled from 'styled-components';
 let NewGame = ({ onClick }) => {
   return (
     <Overlay>
-      <h1>Welcome to Tetris</h1>
+      <h1>Tetris</h1>
       <h3>Enter your Name</h3>
       <input type='text' id='myname' autocomplete="off"></input>
       <button onClick={onClick}>Start Game</button>
@@ -24,19 +24,22 @@ const Overlay = styled.div`
   color: white;
   text-align: center;
   h1{
-    font-size: 60px;
+    font-size: 90px;
+    font-family: 'Games', sans-serif;
   };
   h3{
     font-size: 45px;
+    font-family: 'Games', sans-serif;
   };
   h4{
     font-size: 40px;
+    font-family: 'Games', sans-serif;
   };
   input, button {
     padding: 20;
     font-size: 32;
     text-align: center;
-    font-family: 'Courier New', Courier, monospace;
+    font-family: 'Games', sans-serif;
     width: 60%;
   };
   button {

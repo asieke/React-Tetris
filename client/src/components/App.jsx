@@ -18,7 +18,7 @@ class App extends Component {
       nextPiece: new Piece(1 + Math.floor(Math.random() * 7)),
       speed: 300,
       score: 0,
-      status: 'not-started',
+      status: 'game-over',
       lines: 0,
       volume: true,
       leftKeyPressed: false,
