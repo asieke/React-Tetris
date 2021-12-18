@@ -4,6 +4,8 @@ import { Board, Piece, calculateScore } from '../lib/data';
 
 import Game from './Game';
 import Stats from './Stats';
+import GameOver from './GameOver';
+import NewGame from './NewGame';
 
 window.EPOCH = 0;
 
@@ -22,7 +24,8 @@ class App extends Component {
       leftKeyPressed: false,
       rightKeyPressed: false,
       leftKeyHeld: false,
-      rightKeyHeld: false
+      rightKeyHeld: false,
+      userName: ''
     };
   }
 
@@ -176,7 +179,8 @@ class App extends Component {
       speed: 200,
       status: 'playing',
       lines: 0,
-      volume: true
+      volume: true,
+      userName: document.getElementById('myname').value
     };
     this.setState(startingState, () => this.step());
   };
@@ -186,17 +190,18 @@ class App extends Component {
       <div>
         <HeaderContainer>
           Tetris
-
-          <StepButton onClick={this.startGame}>Start</StepButton>
         </HeaderContainer>
         <Container>
-          {this.state.status === 'game-over' && (
-            <GameOver>
-              <h1>Game Over</h1>
-              <h3>Final Score</h3>
-              <h4>{this.state.lines}</h4>
-            </GameOver>)
-          }
+          {this.state.status === 'game-over' &&
+            <GameOver
+              userName={this.state.userName}
+              lines={this.state.lines}
+              score={this.state.score}
+            />}
+          {this.state.status === 'not-started' &&
+            <NewGame
+              onClick={this.startGame}
+            />}
           <SideBarContainer>
             <Stats
               lines={this.state.lines}
@@ -213,26 +218,6 @@ class App extends Component {
     );
   }
 }
-
-const GameOver = styled.div`
-  position: absolute;
-  z-index: 2;
-  width: 450px;
-  height: 600px;
-  background-color: black;
-  opacity: 0.6;
-  color: white;
-  text-align: center;
-  h1{
-    font-size: 60px;
-  };
-  h3{
-    font-size: 45px;
-  };
-  h4{
-    font-size: 40px;
-  }
-`;
 
 const Container = styled.div`
   display: flex;
