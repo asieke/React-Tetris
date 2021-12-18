@@ -57,7 +57,7 @@ class App extends Component {
       })
 
     }
-    if (e.key === 'ArrowRight' && piece.canMove('right', board)) {
+    if (e.key === 'ArrowRight') {
       this.movePiece('right');
       this.setState({
         rightKeyHeld: e.repeat,
@@ -94,8 +94,16 @@ class App extends Component {
   }
 
   finishPiece = () => {
-    if (this.state.leftKeyPressed === true) this.movePiece('left');
-    if (this.state.rightKeyPressed === true) this.movePiece('right');
+    if (this.state.leftKeyPressed === true) {
+      console.log('trying to go LEFT!@!!!!')
+      this.movePiece('left');
+      this.movePiece('left');
+    }
+    if (this.state.rightKeyPressed === true) {
+      console.log('trying to go RIGHT!@!!!!')
+      this.movePiece('right');
+      this.movePiece('right');
+    }
     this.playSound('fallfx');
     let newBoard = this.state.board.clone();
     newBoard.addPiece(this.state.piece);
