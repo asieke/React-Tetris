@@ -1,12 +1,32 @@
 require('dotenv').config()
 const Sequelize = require('sequelize');
 
+
 const sequelize = (process.env.NODE_ENV === 'development')
   ? new Sequelize(process.env.PG_DATABASE, process.env.PG_USER, process.env.PG_PASSWORD, {
     dialect: 'postgres',
     host: process.env.PG_HOST
   })
-  : new Sequelize(process.env.DATABASE_URL)
+  : new Sequelize(process.env.DATABASE_URL, {
+    dialectOptions: {
+      ssl: {
+        require: true,
+        rejectUnauthorized: false
+      }
+    }
+  });
+
+if (process.env.NODE_ENV !== 'development') {
+  sequelize
+    .authenticate()
+    .then(() => {
+      console.log('Connection has been established successfully.');
+    })
+    .catch(err => {
+      console.error('Unable to connect to the database:', err);
+    });
+}
+
 
 
 const express = require("express");
