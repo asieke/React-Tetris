@@ -1,8 +1,8 @@
 require('dotenv').config()
 const Sequelize = require('sequelize');
-const sequelize = new Sequelize('tetris', process.env.DB_USER, process.env.DB_PASS, {
+const sequelize = new Sequelize(process.env.PG_DATABASE, process.env.PG_USER, process.env.PG_PASSWORD, {
   dialect: 'postgres',
-  host: process.env.DB_HOST
+  host: process.env.PG_HOST
 })
 const express = require("express");
 const app = express();
