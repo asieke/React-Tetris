@@ -1,30 +1,32 @@
 import React from 'react'
 import styled from 'styled-components'
 
-const Game = ({ data }) => {
+const bgs = ['#222', '#3498db', '#9b59b6', '#34495e', '#f1c40f', '#e67e22', '#e74c3c', '#95a5a6'];
+
+const Game = ({ board, piece }) => {
   return (
     <Container>
-      {data.map((row, rowIndex) =>
-        row.map((col, colIndex) => (
-          <Cell background={randomColor} key={rowIndex * 20 + colIndex}>
-            {rowIndex},{colIndex}
-          </Cell>
-        ))
-      )}
+      {board.data.map((val, index) => {
+        //if we're printing the cell that contains the current piece
+        if (piece.getCells().includes(index)) {
+          return <Piece color={bgs[piece.id]} key={index} />
+        } else {
+          return val === 0
+            ? <Cell color={bgs[val]} key={index} />
+            : <Piece color={bgs[val]} key={index} />
+        }
+      })
+      }
+
     </Container>
   )
 }
 
 
-let randomColor = () => {
-  let colors = ['#1abc9c', '#3498db', '#9b59b6', '#34495e', '#f1c40f', '#e67e22', '#e74c3c', '#95a5a6'];
-  return colors[Math.floor(Math.random() * colors.length)];
-}
-
 const Container = styled.div`
   display: flex;
   flex-direction: row;
-  flex-wrap: wrap
+  flex-wrap: wrap;
 `
 
 const Cell = styled.div`
@@ -33,9 +35,18 @@ const Cell = styled.div`
   font-size: 8px;
   margin: 0px;
   padding: 0px;
-  background-color: ${props => props.background}
+  background-color: ${props => props.color};
 `;
 
+const Piece = styled.div`
+  width: 30px;
+  height: 30px;
+  font-size: 8px;
+  margin: 0px;
+  padding: 0px;
+  background-color: ${props => props.color};
+  box-shadow: inset 1px 1px 2px -1px
+`;
 
 
 export default Game
