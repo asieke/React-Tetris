@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import styled from 'styled-components';
-import { Board, Piece } from '../lib/data';
+import { Board, Piece, calculateScore } from '../lib/data';
 
 import Game from './Game';
 import Stats from './Stats';
@@ -15,28 +15,51 @@ class App extends Component {
       piece: new Piece(1 + Math.floor(Math.random() * 7)),
       nextPiece: new Piece(1 + Math.floor(Math.random() * 7)),
       speed: 200,
+      score: 0,
       status: 'not-started',
       lines: 0,
-      volume: false
+      volume: true,
+      leftKeyPressed: false,
+      rightKeyPressed: false,
+      leftKeyHeld: false,
+      rightKeyHeld: false
     };
+  }
+
+  movePiece = (dir) => {
+    if (this.state.piece.canMove(dir, this.state.board)) {
+      let clone = this.state.piece.clone();
+      clone.move(dir);
+      this.setState({ piece: clone });
+    }
+  }
+
+  handleKeyUp = (e) => {
+    this.setState({
+      leftKeyPressed: false,
+      rightKeyPressed: false,
+      leftKeyHeld: false,
+      rightKeyHeld: false
+    });
   }
 
   handleKeyPress = (e) => {
     const { piece, board } = this.state;
 
-    if (e.key === 'ArrowLeft' && piece.canMove('left', board)) {
-      let clone = piece.clone();
-      clone.move('left');
+    if (e.key === 'ArrowLeft') {
+      this.movePiece('left');
       this.setState({
-        piece: clone
-      });
+        leftKeyHeld: e.repeat,
+        leftKeyPressed: true,
+      })
+
     }
     if (e.key === 'ArrowRight' && piece.canMove('right', board)) {
-      let clone = piece.clone();
-      clone.move('right');
+      this.movePiece('right');
       this.setState({
-        piece: clone
-      });
+        rightKeyHeld: e.repeat,
+        rightKeyPressed: true
+      })
     }
     if (e.key === 'ArrowDown') {
       this.setState({
@@ -67,19 +90,24 @@ class App extends Component {
     }
   }
 
-  finishPiece() {
+  finishPiece = () => {
+    if (this.state.leftKeyPressed === true) this.movePiece('left');
+    if (this.state.rightKeyPressed === true) this.movePiece('right');
     this.playSound('fallfx');
     let newBoard = this.state.board.clone();
     newBoard.addPiece(this.state.piece);
     if (newBoard.hasLines()) {
-      let newLines = newBoard.removeLines() + this.state.lines;
+      let scoredLines = newBoard.removeLines()
+      let score = calculateScore(this.state.lines, scoredLines);
+      let newLines = scoredLines + this.state.lines;
       let newSpeed = 200 - Math.floor(newLines / 10) * 20;
       if (Math.floor(newLines / 10) !== Math.floor(this.state.lines / 10)) { // we leveled up!
         this.playSound('levelup');
       }
       this.setState({
         lines: newLines,
-        speed: newSpeed
+        speed: newSpeed,
+        score: this.state.score + score
       });
       this.playSound('linefx');
     }
@@ -104,7 +132,6 @@ class App extends Component {
 
   step = () => {
     window.EPOCH += 10;
-    console.log(window.EPOCH);
     if (this.state.status === 'not-started') {
       console.log('time to start');
     } else {
@@ -115,8 +142,11 @@ class App extends Component {
           this.finishPiece();
           setTimeout(() => this.step(), 10);
         } else {
-          if (window.EPOCH % this.state.speed === 0)
+          if (this.state.leftKeyHeld === true) this.movePiece('left');
+          if (this.state.rightKeyHeld === true) this.movePiece('right');
+          if (window.EPOCH % this.state.speed === 0) {
             this.advancePiece();
+          }
           setTimeout(() => this.step(), 10);
         }
       }
@@ -125,6 +155,7 @@ class App extends Component {
 
   componentDidMount() {
     document.addEventListener('keydown', this.handleKeyPress, false);
+    document.addEventListener('keyup', this.handleKeyUp, false);
     //the piece is in its final resting place
   }
 
@@ -167,9 +198,9 @@ class App extends Component {
             </GameOver>)
           }
           <SideBarContainer>
-            {window.EPOCH}
             <Stats
               lines={this.state.lines}
+              score={this.state.score}
               next={this.state.nextPiece}
             />
           </SideBarContainer>
