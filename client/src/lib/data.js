@@ -1,5 +1,3 @@
-
-
 export class Board {
   constructor() {
     this.data = Array(200).fill(0);
@@ -43,7 +41,7 @@ export class Board {
   //removes lines and
   removeLines() {
 
-    console.log('>>>removing data', this.data)
+    console.log('>>>removing data', this.data);
     let numLines = 0;
 
     for (let i = 199; i >= 0; i -= 10) {
@@ -54,7 +52,7 @@ export class Board {
     }
 
     for (let i = 0; i < numLines; i++) {
-      this.data.unshift(0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
+      this.data.unshift(0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
     }
 
     return numLines;
@@ -78,12 +76,36 @@ export class Piece {
     //Square
     if (id === 2) {
       this.positions = [[0, 1, 10, 11]];
-      this.boundaries = [[0, 1]]
+      this.boundaries = [[0, 1]];
     }
     //Line
     if (id === 3) {
-      this.positions = [[0, 10, 20, 30], [-1, 0, 1, 2]]
-      this.boundaries = [[0, 0], [-1, 2]]
+      this.positions = [[-1, 0, 1, 2], [0, 10, 20, 30]];
+      this.boundaries = [[-1, 2], [0, 0]];
+    }
+
+    //L
+    if (id === 4) {
+      this.positions = [[9, 10, 11, 19], [-1, 0, 10, 20], [1, 9, 10, 11], [0, 10, 20, 21]];
+      this.boundaries = [[-1, 1], [-1, 0], [-1, 1], [0, 1]];
+    }
+
+    //J
+    if (id === 5) {
+      this.positions = [[9, 10, 11, 21], [0, 10, 19, 20], [-1, 9, 10, 11], [0, 1, 10, 20]];
+      this.boundaries = [[-1, 1], [-1, 0], [-1, 1], [0, 1]];
+    }
+
+    //S
+    if (id === 6) {
+      this.positions = [[10, 11, 19, 20], [0, 10, 11, 21]];
+      this.boundaries = [[-1, 1], [0, 1]];
+    }
+
+    //Z
+    if (id === 7) {
+      this.positions = [[9, 10, 20, 21], [1, 10, 11, 20]];
+      this.boundaries = [[-1, 1], [0, 1]];
     }
   }
 
@@ -92,8 +114,8 @@ export class Piece {
     newPiece.rotation = this.rotation;
     newPiece.row = this.row;
     newPiece.col = this.col;
-    newPiece.positions = this.positions.map(x => x.slice())
-    newPiece.boundaries = this.boundaries.map(x => x.slice())
+    newPiece.positions = this.positions.map(x => x.slice());
+    newPiece.boundaries = this.boundaries.map(x => x.slice());
     return newPiece;
   }
 
@@ -111,6 +133,12 @@ export class Piece {
       if (this.col + this.boundaries[this.rotation][1] === 9) return false;
       for (let i = 0; i < cells.length; i++) {
         if (board.data[cells[i] + 1] !== 0) return false;
+      }
+      return true;
+    }
+    if (dir === 'down') {
+      for (let i = 0; i < cells.length; i++) {
+        if (board.data[cells[i] + 10] !== 0) return false;
       }
       return true;
     }
@@ -134,7 +162,7 @@ export class Piece {
 
     //rotation would break right wall
     if (test.col + test.boundaries[test.rotation][1] > 9) {
-      return false
+      return false;
     }
 
     let cells = test.getCells();

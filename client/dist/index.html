@@ -7,17 +7,20 @@
 </head>
 
 <body>
-  <audio id='themefx' loop>
+  <audio id='themefx' loop volume=0>
     <source src="fx/theme.ogg" type="audio/ogg">
   </audio>
-  <audio id='gameoverfx'>
+  <audio id='gameoverfx' volume="0">
     <source src="fx/gameover.ogg" type="audio/ogg">
   </audio>
-  <audio id='linefx'>
+  <audio id='linefx' volume="0">
     <source src="fx/line.ogg" type="audio/ogg">
   </audio>
-  <audio id='fallfx'>
+  <audio id='fallfx' volume="0">
     <source src="fx/fall.wav" type="audio/wav">
+  </audio>
+  <audio id='levelup' volume="0">
+    <source src="fx/levelup.ogg" type="audio/wav">
   </audio>
   <div id="root"></div>
   <script src="bundle.js"></script>

@@ -1,20 +1,22 @@
 import React, { Component } from 'react';
-import styled from 'styled-components'
-import { Board, Piece } from '../lib/data'
+import styled from 'styled-components';
+import { Board, Piece } from '../lib/data';
 
-import Game from './Game'
-import Stats from './Stats'
+import Game from './Game';
+import Stats from './Stats';
 
 class App extends Component {
   constructor(props) {
     super(props);
     this.state = {
       board: new Board(),
-      piece: new Piece(1),
+      piece: new Piece(1 + Math.floor(Math.random() * 7)),
+      nextPiece: new Piece(1 + Math.floor(Math.random() * 7)),
       speed: 200,
       status: 'not-started',
-      lines: 0
-    }
+      lines: 0,
+      volume: true
+    };
   }
 
   handleKeyPress = (e) => {
@@ -25,28 +27,42 @@ class App extends Component {
       clone.move('left');
       this.setState({
         piece: clone
-      })
+      });
     }
     if (e.key === 'ArrowRight' && piece.canMove('right', board)) {
       let clone = piece.clone();
       clone.move('right');
       this.setState({
         piece: clone
-      })
+      });
     }
-    if (e.key === 'a' && piece.canRotate('clockwise', board)) {
+    if (e.key === 'ArrowDown' && piece.canMove('down', board)) {
       let clone = piece.clone();
-      clone.rotate('clockwise')
+      clone.move('down');
       this.setState({
         piece: clone
-      })
+      });
+    }
+    if (e.key === 'a' && piece.canRotate('clockwise', board)) {
+      console.log('rotating piece');
+      let clone = piece.clone();
+      clone.rotate('clockwise');
+      this.setState({
+        piece: clone
+      });
     }
     if (e.key === 's' && piece.canRotate('counter', board)) {
       let clone = piece.clone();
-      clone.rotate('counter')
+      clone.rotate('counter');
       this.setState({
         piece: clone
-      })
+      });
+    }
+  };
+
+  playSound(id) {
+    if (this.state.volume) {
+      document.getElementById(id).play();
     }
   }
 
@@ -58,27 +74,35 @@ class App extends Component {
         this.gameOver();
       } else {
         if (this.state.piece.isDone(this.state.board)) {
-          document.getElementById('fallfx').play();
+          this.playSound('fallfx');
           let newBoard = this.state.board.clone();
           newBoard.addPiece(this.state.piece);
           if (newBoard.hasLines()) {
-            let num = newBoard.removeLines();
-            this.state.lines += num;
-            document.getElementById('linefx').play();
+            let newLines = newBoard.removeLines() + this.state.lines;
+            let newSpeed = 200 - Math.floor(newLines / 10) * 20;
+            if (newSpeed !== this.state.speed) { // we leveled up!
+              this.playSound('levelup');
+            }
+            this.setState({
+              lines: newLines,
+              speed: newSpeed
+            });
+            this.playSound('linefx');
           }
-          let r = 1 + Math.floor(Math.random() * 3);
+          let r = 1 + Math.floor(Math.random() * 7);
           let newPiece = new Piece(r);
           this.setState({
-            piece: newPiece,
+            nextPiece: newPiece,
+            piece: this.state.nextPiece.clone(),
             board: newBoard
-          })
+          });
           setTimeout(() => this.step(), this.state.speed);
         } else {
           let clone = this.state.piece.clone();
           clone.move('down');
           this.setState({
             piece: clone,
-          })
+          });
           setTimeout(() => this.step(), this.state.speed);
         }
       }
@@ -86,22 +110,22 @@ class App extends Component {
   }
 
   componentDidMount() {
-    document.addEventListener('keydown', this.handleKeyPress, false)
+    document.addEventListener('keydown', this.handleKeyPress, false);
     //the piece is in its final resting place
   }
 
   gameOver = () => {
     document.getElementById('themefx').pause();
-    document.getElementById('gameoverfx').play();
+    this.playSound('gameoverfx');
     this.setState({
       status: 'game-over'
-    })
-  }
+    });
+  };
 
   startGame = () => {
-    document.getElementById('themefx').play();
-    this.setState({ status: 'playing' }, () => this.step())
-  }
+    this.playSound('themefx');
+    this.setState({ status: 'playing' }, () => this.step());
+  };
 
   render() {
     return (
@@ -113,9 +137,12 @@ class App extends Component {
         <Container>
           <StatsContainer>
             {this.state.status === 'game-over' && (
-              <span>GAME OVER MAN</span>
+              <GameOver>Game Over</GameOver>
             )}
-            <Stats lines={this.state.lines} />
+            <Stats
+              lines={this.state.lines}
+              next={this.state.nextPiece}
+              speed={this.state.speed} />
           </StatsContainer>
           <GameContainer>
             {this.state.status !== 'not-started' && <Game board={this.state.board} piece={this.state.piece} />}
@@ -127,6 +154,11 @@ class App extends Component {
   }
 }
 
+const GameOver = styled.div`
+  width: 100%;
+  height: 100px;
+  background-color: yellow
+`;
 
 const Container = styled.div`
   display: flex;
@@ -141,12 +173,13 @@ const HeaderContainer = styled.div`
   font-family: 'Games', sans-serif;
   background-color: #444;
   color: #eee;
-`
+`;
 
 const StatsContainer = styled.div`
   display: flex;
-  width: 130px;
-  padding: 10px;
+  flex-direction: column;
+  width: 120px;
+  padding: 15px;
   background-color: #333;
   color: #eee;
 `;
@@ -169,6 +202,6 @@ const StepButton = styled.button`
     background-color: green;
     cursor: pointer;
   }
-`
+`;
 
 export default App;
