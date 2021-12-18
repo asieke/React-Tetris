@@ -10,7 +10,7 @@ export class Board {
   }
 
   isGameOver() {
-    for (let i = 29; i >= 0; i--) {
+    for (let i = 19; i >= 0; i--) {
       if (this.data[i] > 0) {
         return true;
       }

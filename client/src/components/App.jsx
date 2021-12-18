@@ -16,7 +16,7 @@ class App extends Component {
       board: new Board(),
       piece: new Piece(1 + Math.floor(Math.random() * 7)),
       nextPiece: new Piece(1 + Math.floor(Math.random() * 7)),
-      speed: 200,
+      speed: 300,
       score: 0,
       status: 'not-started',
       lines: 0,
@@ -103,7 +103,7 @@ class App extends Component {
       let scoredLines = newBoard.removeLines()
       let score = calculateScore(this.state.lines, scoredLines);
       let newLines = scoredLines + this.state.lines;
-      let newSpeed = 200 - Math.floor(newLines / 10) * 20;
+      let newSpeed = 300 - Math.floor(newLines / 10) * 20;
       if (Math.floor(newLines / 10) !== Math.floor(this.state.lines / 10)) { // we leveled up!
         this.playSound('levelup');
       }
@@ -116,7 +116,7 @@ class App extends Component {
     }
     let r = 1 + Math.floor(Math.random() * 7);
     let newPiece = new Piece(r);
-    let newSpeed = 200 - Math.floor(this.state.lines / 10) * 20;
+    let newSpeed = 300 - Math.floor(this.state.lines / 10) * 20;
     this.setState({
       nextPiece: newPiece,
       piece: this.state.nextPiece.clone(),
@@ -171,16 +171,20 @@ class App extends Component {
   };
 
   startGame = () => {
+    let el = document.getElementById('myname');
+    let n = this.state.userName;
+    let un = (n.length > 0 ? n : (el ? el.value : 'anon'))
+
     this.playSound('themefx');
     let startingState = {
       board: new Board(),
       piece: this.state.nextPiece.clone(),
       nextPiece: new Piece(1 + Math.floor(Math.random() * 7)),
-      speed: 200,
+      speed: 300,
       status: 'playing',
       lines: 0,
       volume: true,
-      userName: document.getElementById('myname').value
+      userName: un
     };
     this.setState(startingState, () => this.step());
   };
@@ -197,6 +201,7 @@ class App extends Component {
               userName={this.state.userName}
               lines={this.state.lines}
               score={this.state.score}
+              onClick={this.startGame}
             />}
           {this.state.status === 'not-started' &&
             <NewGame

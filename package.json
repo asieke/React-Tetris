@@ -5,7 +5,7 @@
   "main": "server.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "node server.js",
+    "start": "nodemon server.js",
     "react-dev": "webpack --watch"
   },
   "author": "",
@@ -19,10 +19,13 @@
     "webpack-cli": "^4.9.1"
   },
   "dependencies": {
+    "axios": "^0.24.0",
     "express": "^4.17.1",
+    "mysql2": "^2.3.3",
     "nodemon": "^2.0.15",
     "react": "^17.0.2",
     "react-dom": "^17.0.2",
+    "sequelize": "^6.12.0",
     "styled-components": "^5.3.3"
   }
 }
