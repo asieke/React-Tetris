@@ -41,7 +41,6 @@ export class Board {
   //removes lines and
   removeLines() {
 
-    console.log('>>>removing data', this.data);
     let numLines = 0;
 
     for (let i = 199; i >= 0; i -= 10) {
@@ -145,7 +144,6 @@ export class Piece {
   }
 
   move(dir) {
-
     if (dir === 'down') this.row++;
     if (dir === 'left') this.col--;
     if (dir === 'right') this.col++;

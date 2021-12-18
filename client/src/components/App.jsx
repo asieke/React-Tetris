@@ -36,15 +36,16 @@ class App extends Component {
         piece: clone
       });
     }
-    if (e.key === 'ArrowDown' && piece.canMove('down', board)) {
+    if (e.key === 'ArrowDown') {
       let clone = piece.clone();
       clone.move('down');
       this.setState({
+        speed: 10,
         piece: clone
       });
     }
     if (e.key === 'a' && piece.canRotate('clockwise', board)) {
-      console.log('rotating piece');
+
       let clone = piece.clone();
       clone.rotate('clockwise');
       this.setState({
@@ -91,10 +92,12 @@ class App extends Component {
           }
           let r = 1 + Math.floor(Math.random() * 7);
           let newPiece = new Piece(r);
+          let newSpeed = 200 - Math.floor(this.state.lines / 10) * 20;
           this.setState({
             nextPiece: newPiece,
             piece: this.state.nextPiece.clone(),
-            board: newBoard
+            board: newBoard,
+            speed: newSpeed
           });
           setTimeout(() => this.step(), this.state.speed);
         } else {
@@ -124,7 +127,16 @@ class App extends Component {
 
   startGame = () => {
     this.playSound('themefx');
-    this.setState({ status: 'playing' }, () => this.step());
+    let startingState = {
+      board: new Board(),
+      piece: this.state.nextPiece.clone(),
+      nextPiece: new Piece(1 + Math.floor(Math.random() * 7)),
+      speed: 200,
+      status: 'playing',
+      lines: 0,
+      volume: true
+    };
+    this.setState(startingState, () => this.step());
   };
 
   render() {
@@ -135,14 +147,18 @@ class App extends Component {
           <StepButton onClick={this.startGame}>Start</StepButton>
         </HeaderContainer>
         <Container>
+          {this.state.status === 'game-over' && (
+            <GameOver>
+              <h1>Game Over</h1>
+              <h3>Final Score</h3>
+              <h4>{this.state.lines}</h4>
+            </GameOver>)
+          }
           <StatsContainer>
-            {this.state.status === 'game-over' && (
-              <GameOver>Game Over</GameOver>
-            )}
             <Stats
               lines={this.state.lines}
               next={this.state.nextPiece}
-              speed={this.state.speed} />
+            />
           </StatsContainer>
           <GameContainer>
             {this.state.status !== 'not-started' && <Game board={this.state.board} piece={this.state.piece} />}
@@ -155,9 +171,23 @@ class App extends Component {
 }
 
 const GameOver = styled.div`
-  width: 100%;
-  height: 100px;
-  background-color: yellow
+  position: absolute;
+  z-index: 2;
+  width: 450px;
+  height: 600px;
+  background-color: black;
+  opacity: 0.6;
+  color: white;
+  text-align: center;
+  h1{
+    font-size: 60px;
+  };
+  h3{
+    font-size: 45px;
+  };
+  h4{
+    font-size: 40px;
+  }
 `;
 
 const Container = styled.div`

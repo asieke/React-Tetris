@@ -34,8 +34,6 @@ let Stats = ({ lines, next, speed }) => {
       <Data>{lines}</Data>
       <Text>Level</Text>
       <Data>{Math.floor(lines / 10)}</Data>
-      <Text>Speed</Text>
-      <Data>{speed}</Data>
     </div>
   );
 };
